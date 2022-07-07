@@ -1,0 +1,7 @@
+.vscode
+MDK-ARM/DebugConfig
+MDK-ARM/RTE
+MDK-ARM/STM32F405_HW_IIC_DEMO
+MDK-ARM/EventRecorderStub.scvd
+MDK-ARM/startup_stm32f405xx.lst
+*.uvguix.*
