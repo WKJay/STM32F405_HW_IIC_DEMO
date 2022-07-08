@@ -21,6 +21,8 @@ extern I2C_HandleTypeDef hi2c2;
 extern DMA_HandleTypeDef hdma_i2c2_tx;
 #endif
 
+static uint32_t i2c_reset_cnt = 0;
+
 void delay_ms(uint32_t ms) { HAL_Delay(ms); }
 
 int i2c_hw_init(void) {
@@ -67,6 +69,7 @@ void i2c_hw_reset(void) {
     hi2c2.Instance->CR1 |= I2C_CR1_SWRST;
     hi2c2.Instance->CR1 &= ~I2C_CR1_SWRST;
     i2c_hw_init();
+    i2c_reset_cnt++;
 }
 
 void oled_reset(void) {
@@ -80,7 +83,7 @@ void oled_write_cmd(uint8_t cmd) {
     uint8_t _data[2] = {0x00, cmd};
 #if I2C_USE_DMA
     if (HAL_I2C_Mem_Write_DMA(&hi2c2, 0x78, 0x00, I2C_MEMADD_SIZE_8BIT, &_data[1], 2) != HAL_OK) {
-        i2c_hw_init();
+        i2c_hw_reset();
     }
     while (hi2c2.XferCount > 0)
         ;
@@ -89,7 +92,7 @@ void oled_write_cmd(uint8_t cmd) {
     hi2c2.Mode = HAL_I2C_MODE_NONE;
 #else
     if (HAL_I2C_Master_Transmit(&hi2c2, 0x78, _data, 2, 100) != HAL_OK) {
-        i2c_hw_init();
+        i2c_hw_reset();
     }
 #endif
 }
@@ -98,7 +101,7 @@ void oled_write_data(uint8_t data) {
     uint8_t _data[2] = {0x40, data};
 #if I2C_USE_DMA
     if (HAL_I2C_Mem_Write_DMA(&hi2c2, 0x78, 0x40, I2C_MEMADD_SIZE_8BIT, &_data[1], 2) != HAL_OK) {
-        i2c_hw_init();
+        i2c_hw_reset();
     }
     while (hi2c2.XferCount > 0)
         ;
@@ -107,7 +110,7 @@ void oled_write_data(uint8_t data) {
     hi2c2.Mode = HAL_I2C_MODE_NONE;
 #else
     if (HAL_I2C_Master_Transmit(&hi2c2, 0x78, _data, 2, 100) != HAL_OK) {
-        i2c_hw_init();
+        i2c_hw_reset();
     }
 #endif
 }
@@ -124,7 +127,7 @@ void oled_write_data_stream(uint8_t *data, uint32_t len) {
 #if I2C_USE_DMA
     if (HAL_I2C_Mem_Write_DMA(&hi2c2, 0x78, 0x40, I2C_MEMADD_SIZE_8BIT, &_data[1], len + 1) !=
         HAL_OK) {
-        i2c_hw_init();
+        i2c_hw_reset();
     }
     while (hi2c2.XferCount > 0)
         ;
@@ -133,7 +136,9 @@ void oled_write_data_stream(uint8_t *data, uint32_t len) {
     hi2c2.Mode = HAL_I2C_MODE_NONE;
 #else
     if (HAL_I2C_Master_Transmit(&hi2c2, 0x78, _data, len + 1, 100) != HAL_OK) {
-        i2c_hw_init();
+        i2c_hw_reset();
     }
 #endif
 }
+
+uint32_t i2c_reset_cnt_get(void) { return i2c_reset_cnt; }

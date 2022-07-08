@@ -24,6 +24,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "oled.h"
+#include "oled_hw.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -69,8 +70,8 @@ static void MX_I2C2_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  uint32_t cnt=0;
-  char str[16]={0};
+  uint32_t cnt=0,i2c_reset_cnt=0;
+  char str[16]={0},str2[16]={0};
   
   /* USER CODE END 1 */
 
@@ -109,9 +110,12 @@ int main(void)
   {
     /* USER CODE END WHILE */
     cnt++;
-    sprintf(str,"count:%d",cnt);
+    i2c_reset_cnt = i2c_reset_cnt_get();
+    snprintf(str, sizeof(str), "count:%u", cnt);
+    snprintf(str2, sizeof(str2), "i2c reset:%u", i2c_reset_cnt);
     oled_clear();
-    oled_show_string16(0,10,str);
+    oled_show_string16(0, 10, str);
+    oled_show_string12(0, 40, str2);
     oled_refresh();
 
     HAL_Delay(1000);

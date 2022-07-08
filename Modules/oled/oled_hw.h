@@ -10,4 +10,6 @@ void oled_write_data_stream(uint8_t *data, uint32_t len);
 
 void oled_reset(void);
 
+uint32_t i2c_reset_cnt_get(void);
+
 #endif /* __OLED_HW_H__ */

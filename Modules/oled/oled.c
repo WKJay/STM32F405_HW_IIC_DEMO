@@ -194,9 +194,9 @@ void oled_show_char12(uint8_t x, uint8_t y, uint8_t chr) {
     if (p == NULL) {
         return;
     }
-    for (i = 0; i < 16; i++) {
+    for (i = 0; i < 12; i++) {
         temp = p[i];  // invoke 1608 font
-        for (j = 0; j < 8; j++) {
+        for (j = 0; j < 6; j++) {
             if (((temp >> j) & 0x01) == 1) {
                 oled_draw_point(x + j, y + i, OLED_DRAW_TYPE_FILL);
             } else {
